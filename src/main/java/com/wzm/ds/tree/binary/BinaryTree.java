@@ -12,25 +12,15 @@ public interface BinaryTree<T> extends Tree<T> {
     // 查询操作
 
     @Override
-    BinaryTree<T> find(T value);
-
-    /**
-     * 获取左子树
-     * @return 左子树
-     */
-    BinaryTree<T> left();
-
-    /**
-     * 获取右子树
-     * @return 右子树
-     */
-    BinaryTree<T> right();
+    BinaryTreeNode<T> root();
+    @Override
+    BinaryTreeNode<T> find(T value);
 
     /**
      * 添加节点
-     * @param element   节点
+     * @param value   节点值
      */
-    void add(T element);
+    void add(T value);
 
     /**
      * 移除节点

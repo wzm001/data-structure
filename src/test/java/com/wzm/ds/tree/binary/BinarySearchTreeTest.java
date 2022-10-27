@@ -1,6 +1,7 @@
 package com.wzm.ds.tree.binary;
 
 import com.wzm.ds.tree.TreeIterator;
+import com.wzm.ds.tree.TreeNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,11 +18,17 @@ class BinarySearchTreeTest {
     @BeforeAll
     static void init() {
         random = new Random(System.currentTimeMillis());
-        bst = new BinarySearchTree<>(random.nextInt(10000));
-        for (int i = 0; i < 5000; i++) {
-            bst.add(random.nextInt(10000));
+        bst = new BinarySearchTree<>();
+        for (int i = 0; i < 50; i++) {
+            int value = random.nextInt(100);
+            bst.add(value);
         }
         System.out.println(bst);
+        // 遍历
+        TreeIterator<Integer> iterator = new TreeIterator<>(bst, TreeIterator.IN_ORDER_MODE);
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next().getValue() + ",");
+        }
     }
 
     @Test
@@ -30,18 +37,9 @@ class BinarySearchTreeTest {
         TreeIterator<Integer> iterator = new TreeIterator<>(bst, TreeIterator.IN_ORDER_MODE);
         int last = Integer.MIN_VALUE;
         while (iterator.hasNext()) {
-            Integer next = iterator.next();
-            if (next > last) last = next;
-            else throw new RuntimeException("不是二叉搜索树");
-        }
-    }
-
-    @Test
-    @DisplayName("传统查找")
-    void originalFind() {
-        CommonBinaryTree<Integer> binaryTree = (CommonBinaryTree<Integer>) bst;
-        for (int i = 0; i < 1000; i++) {
-            binaryTree.find(random.nextInt(10000));
+            TreeNode<Integer> next = iterator.next();
+            assertTrue(next.getValue() > last);
+            last = next.getValue();
         }
     }
 

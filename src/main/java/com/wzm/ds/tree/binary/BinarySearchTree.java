@@ -11,46 +11,56 @@ package com.wzm.ds.tree.binary;
  *
  * @author wuzhiming@itiger.com
  */
-public class BinarySearchTree<T extends Comparable<T>> extends CommonBinaryTree<T> implements BinaryTree<T> {
-
-    protected BinarySearchTree(T value) {
-        super(value);
-    }
+public class BinarySearchTree<T extends Comparable<T>> extends CommonBinaryTree<T> {
 
     @Override
-    public void add(T element) {
-        if (element == null) return;
-        if (this.value.compareTo(element) == 0) return;
-        if (this.value.compareTo(element) > 0) {
-            if (this.left == null) {
-                BinarySearchTree<T> node = new BinarySearchTree<>(element);
-                node.parent = this;
-                this.left = node;
+    public void add(T value) {
+        BinaryTreeNode<T> node = new BinaryTreeNode<>(value);
+        if (isEmpty()) {
+            setRoot(node);
+            size++;
+            return;
+        }
+        if (innerAdd(root(), node)) {
+            size++;
+        }
+    }
+
+    private static <T extends Comparable<T>> boolean innerAdd(BinaryTreeNode<T> root, BinaryTreeNode<T> node) {
+        int compareResult = root.getValue().compareTo(node.getValue());
+        if (compareResult == 0) return false;
+        if (compareResult > 0) {
+            if (root.getLeftChild() == null) {
+                node.setParent(root);
+                root.setLeftChild(node);
+                return true;
             } else {
-                this.left.add(element);
+                return innerAdd(root.getLeftChild(), node);
             }
         } else {
-            if (this.right == null) {
-                BinarySearchTree<T> node = new BinarySearchTree<>(element);
-                node.parent = this;
-                this.right = node;
+            if (root.getRightChild() == null) {
+                node.setParent(root);
+                root.setRightChild(node);
+                return true;
             } else {
-                this.right.add(element);
+                return innerAdd(root.getRightChild(), node);
             }
         }
     }
 
     @Override
-    public BinaryTree<T> find(T value) {
-        if (value == null) return null;
-        int compareResult = this.value.compareTo(value);
-        if (compareResult == 0) return this;
+    public BinaryTreeNode<T> find(T value) {
+        return innerFind(root(), value);
+    }
+
+    private static <T extends Comparable<T>> BinaryTreeNode<T> innerFind(BinaryTreeNode<T> root, T value) {
+        if (root == null || value == null) return null;
+        int compareResult = root.getValue().compareTo(value);
+        if (compareResult == 0) return root;
         if (compareResult > 0) {
-            if (this.left != null) return this.left.find(value);
-            else return null;
+            return innerFind(root.getLeftChild(), value);
         } else {
-            if (this.right != null) return this.right.find(value);
-            else return null;
+            return innerFind(root.getRightChild(), value);
         }
     }
 

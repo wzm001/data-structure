@@ -1,145 +1,171 @@
 package com.wzm.ds.tree;
 
-import com.wzm.ds.list.Lists;
-import com.wzm.ds.list._List;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
+import java.util.List;
 
 /**
  * @author wuzhiming@itiger.com
  */
 public class CommonTree<T> implements Tree<T> {
 
-    protected final T value;
-    protected _List<Tree<T>> subTrees = Lists.newLinkedList(null);
+    private TreeNode<T> root;
+    protected int size;
 
-    public CommonTree(T value) {
-        this.value = Objects.requireNonNull(value);
+    @Override
+    public TreeNode<T> root() {
+        return root;
+    }
+
+    protected void setRoot(TreeNode<T> root) {
+        this.root = root;
     }
 
     @Override
     public int height() {
-        if (isLeaf()) return 0;
+        if (isEmpty()) return -1;
+        return heightOfNode(root);
+    }
+
+    private static int heightOfNode(TreeNode<?> root) {
+        if (root.isLeaf()) return 0;
         int subHeight = 0;
-        for (Tree<T> subTree : subTrees()) {
-            if (subTree != null) {
-                subHeight = Math.max(subHeight, subTree.height());
+        for (TreeNode<?> subNode : root.children) {
+            if (subNode != null) {
+                subHeight = Math.max(subHeight, heightOfNode(subNode));
             }
         }
         return subHeight + 1;
     }
 
     @Override
-    public int depth(T node) {
-        if (node == null) return -1;
-        if (node.equals(value)) return 0;
-        if (isLeaf()) return -1; // 表示当前子树不包含该节点
-        int subDepth = -1;
-        for (Tree<T> subTree : subTrees()) {
-            if (subTree != null) {
-                subDepth = Math.max(subDepth, subTree.depth(node));
-            }
-        }
-        return subDepth == -1 ? -1 : subDepth + 1;
-    }
-
-    @Override
     public boolean contains(T value) {
-        return find(value) != null;
+        return findNode(root, value) != null;
     }
 
     @Override
-    public Tree<T> find(T value) {
-        if (value == null) return null;
-        if (this.value.equals(value)) return this;
-        for (Tree<T> subTree : subTrees()) {
-            if (subTree != null) {
-                Tree<T> result = subTree.find(value);
-                if (result != null) return result;
-            }
+    public TreeNode<T> find(T value) {
+        return findNode(root, value);
+    }
+
+    private static <T> TreeNode<T> findNode(TreeNode<T> root, T value) {
+        if (root == null || value == null) return null;
+        if (root.getValue().equals(value)) return root;
+        if (root.isLeaf()) return null;
+        for (TreeNode<T> child : root.getChildren()) {
+            TreeNode<T> node = findNode(child, value);
+            if (node != null) return node;
         }
         return null;
     }
 
     @Override
     public int size() {
-        if (isLeaf()) return 1;
-        int size = 0;
-        for (Tree<T> subTree : subTrees()) {
-            if (subTree != null) size += subTree.size();
-        }
-        return size + 1;
+        return size;
     }
 
     @Override
-    public _List<Tree<T>> subTrees() {
-        return subTrees;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        if (Lists.isEmpty(subTrees)) return true;
-        boolean allNull = true;
-        for (Tree<T> subTree : subTrees) {
-            if (subTree != null) {
-                allNull = false;
-                break;
-            }
-        }
-        return allNull;
-    }
-
-    @Override
-    public T value() {
-        return value;
+    public boolean isEmpty() {
+        return root == null;
     }
 
     @Override
     public boolean isBalance() {
-        if (isLeaf()) return true;
-        int minHeight = -1, maxHeight = -1;
-        for (Tree<T> subTree : subTrees()) {
-            if (subTree != null && !subTree.isBalance()) {
-                return false;
-            }
-            int height = treeLevel(subTree);
-            if (minHeight < 0) {
-                // 初始化
-                minHeight = height;
-                maxHeight = height;
-            } else {
-                minHeight = Math.min(minHeight, height);
-                maxHeight = Math.max(maxHeight, height);
-            }
-        }
-        return maxHeight - minHeight < 2;
+        if (isEmpty()) return false;
+        return isBalanceNode(root);
     }
 
-    private static int treeLevel(Tree<?> tree) {
-        if (tree == null) return 0; // 空树的层数为0
-        if (tree.isLeaf()) return 1; // 叶子节点层数为1
-        return tree.height() + 1; // 普通节点层数等于子树高+1
+    private boolean isBalanceNode(TreeNode<T> root) {
+        // 空节点和叶子节点都是平衡的子树
+        if (root == null || root.isLeaf()) return true;
+        int minLevel = -1, maxLevel = -1;
+        for (TreeNode<T> child : root.getChildren()) {
+            if (!isBalanceNode(child)) return false;
+            int level = levelOfNode(child);
+            if (minLevel < 0) {
+                minLevel = level;
+                maxLevel = level;
+            } else {
+                minLevel = Math.min(minLevel, level);
+                maxLevel = Math.max(maxLevel, level);
+            }
+        }
+        return maxLevel - minLevel < 2;
+    }
+
+    private static int levelOfNode(TreeNode<?> node) {
+        if (node == null) return 0; // 空树的层数为0
+        return heightOfNode(node) + 1;
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<TreeNode<T>> iterator() {
         return new TreeIterator<>(this, TreeIterator.PRE_ORDER_MODE);
     }
 
-    /**
-     * ├  │  └ ─
-     */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(this.getClass().getSimpleName())
-                .append(", size=").append(size()).append(". \n");
-        for (T t : this) {
-            for (int i = 0; i < depth(t); i++) {
-                sb.append("  ");
-            }
-            sb.append("|-").append(t.toString()).append("\n");
+        StringBuilder sb = new StringBuilder(this.getClass().getSimpleName()).append(", size=").append(size).append("\n");
+        List<PrintNode> list = new ArrayList<>(size);
+        initPrintNodes(list, null, root, null);
+        for (PrintNode printNode : list) {
+            sb.append(printNode);
         }
         return sb.toString();
+    }
+
+    private static final class PrintNode {
+        TreeNode<?> node;
+        PrintNode parent;
+        Boolean isLast;
+
+        public PrintNode(TreeNode<?> node, PrintNode parent, Boolean isLast) {
+            this.node = node;
+            this.parent = parent;
+            this.isLast = isLast;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (isLast != null) {
+                if (isLast) {
+                    sb.append("└── ");
+                } else {
+                    sb.append("├── ");
+                }
+            }
+            if (node == null) {
+                sb.append("(NUL)");
+            } else {
+                sb.append(node.value);
+            }
+            PrintNode temp = parent;
+            while (temp != null) {
+                if (temp.isLast != null) {
+                    if (temp.isLast) {
+                        sb.insert(0, "    ");
+                    } else {
+                        sb.insert(0, "│   ");
+                    }
+                }
+                temp = temp.parent;
+            }
+            sb.append("\n");
+            return sb.toString();
+        }
+    }
+
+    private static void initPrintNodes(@NotNull List<PrintNode> list, PrintNode parent, TreeNode<?> node, Boolean isLast) {
+        PrintNode printNode = new PrintNode(node, parent, isLast);
+        list.add(printNode);
+        if (node == null || node.isLeaf()) {
+            return;
+        }
+        for (int i = 0; i < node.children.size(); i++) {
+            initPrintNodes(list, printNode, node.children.get(i), i == node.children.size() - 1);
+        }
     }
 }

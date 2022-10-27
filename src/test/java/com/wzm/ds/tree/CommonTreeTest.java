@@ -24,27 +24,31 @@ class CommonTreeTest {
      */
     @BeforeAll
     static void init() {
-        commonTree = new CommonTree<>("A");
-        Tree<String> b = new CommonTree<>("B");
-        Tree<String> c = new CommonTree<>("C");
-        Tree<String> d = new CommonTree<>("D");
-        Tree<String> e = new CommonTree<>("E");
-        Tree<String> i = new CommonTree<>("I");
-        Tree<String> j = new CommonTree<>("J");
-        e.subTrees().add(i);
-        e.subTrees().add(j);
-        Tree<String> f = new CommonTree<>("F");
-        c.subTrees().add(d);
-        c.subTrees().add(e);
-        c.subTrees().add(f);
+        CommonTree<String> tree = new CommonTree<>();
+        tree.size = 10;
+        tree.setRoot(new TreeNode<>("A"));
+        TreeNode<String> b = new TreeNode<>("B");
+        TreeNode<String> c = new TreeNode<>("C");
+        TreeNode<String> d = new TreeNode<>("D");
+        TreeNode<String> e = new TreeNode<>("E");
+        TreeNode<String> i = new TreeNode<>("I");
+        TreeNode<String> j = new TreeNode<>("J");
+        e.setChild(0, i);
+        e.setChild(1, j);
+        TreeNode<String> f = new TreeNode<>("F");
+        c.setChild(0, d);
+        c.setChild(1, e);
+        c.setChild(2, f);
 
-        Tree<String> g = new CommonTree<>("G");
-        Tree<String> h = new CommonTree<>("H");
-        g.subTrees().add(h);
+        TreeNode<String> g = new TreeNode<>("G");
+        TreeNode<String> h = new TreeNode<>("H");
+        g.setChild(0, h);
 
-        commonTree.subTrees().add(b);
-        commonTree.subTrees().add(c);
-        commonTree.subTrees().add(g);
+        tree.root().setChild(0, b);
+        tree.root().setChild(1, c);
+        tree.root().setChild(2, g);
+
+        commonTree = tree;
 
         System.out.println(commonTree);
     }
@@ -53,14 +57,6 @@ class CommonTreeTest {
     @DisplayName("高度")
     void height() {
         assertEquals(3, commonTree.height());
-    }
-
-    @Test
-    @DisplayName("深度")
-    void depth() {
-        assertEquals(0, commonTree.depth("A"));
-        assertEquals(1, commonTree.depth("C"));
-        assertEquals(3, commonTree.depth("I"));
     }
 
     @Test
@@ -87,19 +83,6 @@ class CommonTreeTest {
     }
 
     @Test
-    @DisplayName("查找")
-    void find() {
-        Tree<String> root = commonTree.find("A");
-        assertNotNull(root);
-        assertEquals("A", root.value());
-        Tree<String> j = commonTree.find("J");
-        assertNotNull(j);
-        assertEquals("J", j.value());
-        Tree<String> none = commonTree.find("null");
-        assertNull(none);
-    }
-
-    @Test
     @DisplayName("遍历")
     void iterator() {
         TreeIterator<String> preOrder = new TreeIterator<>(commonTree, TreeIterator.PRE_ORDER_MODE);
@@ -113,16 +96,9 @@ class CommonTreeTest {
     private String iterate(TreeIterator<String> iterator) {
         StringBuilder sb = new StringBuilder();
         while (iterator.hasNext()) {
-            sb.append(iterator.next());
+            sb.append(iterator.next().getValue());
         }
         return sb.toString();
-    }
-
-    @Test
-    @DisplayName("判断叶子节点")
-    void isLeaf() {
-        assertFalse(commonTree.isLeaf());
-        assertTrue(commonTree.find("D").isLeaf());
     }
 
     @Test
