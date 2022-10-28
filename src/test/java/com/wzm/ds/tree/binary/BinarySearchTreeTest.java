@@ -2,33 +2,39 @@ package com.wzm.ds.tree.binary;
 
 import com.wzm.ds.tree.TreeIterator;
 import com.wzm.ds.tree.TreeNode;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BinarySearchTreeTest {
 
-    private static BinaryTree<Integer> bst;
-    private static Random random;
+    private BinaryTree<Integer> bst;
 
-    @BeforeAll
-    static void init() {
-        random = new Random(System.currentTimeMillis());
+    @BeforeEach
+    void init() {
         bst = new BinarySearchTree<>();
-        for (int i = 0; i < 50; i++) {
-            int value = random.nextInt(100);
-            bst.add(value);
-        }
-        System.out.println(bst);
-        // 遍历
-        TreeIterator<Integer> iterator = new TreeIterator<>(bst, TreeIterator.IN_ORDER_MODE);
-        while (iterator.hasNext()) {
-            System.out.print(iterator.next().getValue() + ",");
-        }
+        bst.add(66);
+        bst.add(6);
+        bst.add(12);
+        bst.add(50);
+        bst.add(15);
+        bst.add(68);
+        bst.add(64);
+        bst.add(99);
+        bst.add(19);
+        bst.add(6);
+        bst.add(94);
+        bst.add(58);
+        bst.add(19);
+        bst.add(37);
+        bst.add(47);
+        bst.add(94);
+        bst.add(40);
+        bst.add(97);
+        bst.add(17);
+        bst.add(83);
     }
 
     @Test
@@ -46,12 +52,27 @@ class BinarySearchTreeTest {
     @Test
     @DisplayName("查找")
     void find() {
-        for (int i = 0; i < 1000; i++) {
-            bst.find(random.nextInt(10000));
-        }
+        assertNotNull(bst.find(12));
+        assertNotNull(bst.find(66));
+        assertNotNull(bst.find(40));
+        assertNull(bst.find(null));
+        assertNull(bst.find(123));
     }
 
     @Test
+    @DisplayName("删除")
     void remove() {
+        System.out.println(bst);
+        assertTrue(bst.remove(19));
+        checkBST();
+        System.out.println("19 removed: ");
+        System.out.println(bst);
+        assertEquals(16, bst.size());
+        assertTrue(bst.remove(66));
+        checkBST();
+        System.out.println("66 removed: ");
+        System.out.println(bst);
+        assertEquals(15, bst.size());
+        checkBST();
     }
 }

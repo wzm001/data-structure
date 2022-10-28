@@ -16,6 +16,11 @@ public class BinaryTreeNode<T> extends TreeNode<T> {
         super(value);
     }
 
+    @Override
+    public BinaryTreeNode<T> getParent() {
+        return (BinaryTreeNode<T>) parent;
+    }
+
     public BinaryTreeNode<T> getLeftChild() {
         return leftChild;
     }

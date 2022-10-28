@@ -26,10 +26,6 @@ public final class Lists {
         return new _LinkedList<>(es);
     }
 
-    public static boolean isEmpty(List<?> list) {
-        return list == null || list.isEmpty();
-    }
-
     public static <E>_Stack<E> newStack() {
         return new LinkedStack<>();
     }
