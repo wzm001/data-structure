@@ -10,18 +10,6 @@ class CommonTreeTest {
 
     static Tree<String> commonTree;
 
-    /**
-     * |-A
-     *   |-B
-     *   |-C
-     *     |-D
-     *     |-E
-     *       |-I
-     *       |-J
-     *     |-F
-     *   |-G
-     *     |-H
-     */
     @BeforeAll
     static void init() {
         CommonTree<String> tree = new CommonTree<>();
@@ -56,7 +44,7 @@ class CommonTreeTest {
     @Test
     @DisplayName("高度")
     void height() {
-        assertEquals(3, commonTree.height());
+        assertEquals(4, commonTree.height());
     }
 
     @Test

@@ -25,7 +25,7 @@ abstract class CommonBinaryTree<T extends Comparable<T>> extends CommonTree<T> i
     @Override
     public boolean isPerfect() {
         // 完美二叉树的节点数量 n = 2 ^ (树的层数) - 1
-        int expectedNodes = (int) (Math.pow(2, height() + 1) - 1);
+        int expectedNodes = (int) (Math.pow(2, height()) - 1);
         return expectedNodes == size();
     }
 

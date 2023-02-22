@@ -25,8 +25,8 @@ public class CommonTree<T> implements Tree<T> {
 
     @Override
     public int height() {
-        if (isEmpty()) return -1;
-        return heightOfNode(root);
+        if (isEmpty()) return 0;
+        return heightOfNode(root) + 1;
     }
 
     private static int heightOfNode(TreeNode<?> root) {

@@ -9,8 +9,8 @@ import com.wzm.ds.tree.TreeNode;
  */
 public class BinaryTreeNode<T> extends TreeNode<T> {
 
-    private BinaryTreeNode<T> leftChild;
-    private BinaryTreeNode<T> rightChild;
+    protected BinaryTreeNode<T> leftChild;
+    protected BinaryTreeNode<T> rightChild;
 
     public BinaryTreeNode(T value) {
         super(value);
